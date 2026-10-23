@@ -1,0 +1,1332 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>그러면 안 돼! 인권 지킴이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF6F8; --surface:#FFFFFF; --ink:#16233A; --muted:#52627A; --line:#C5D7E0;
+  --thorn:#D93B36; --thorn-soft:#FDE4E2; --calm:#16875F; --calm-soft:#D6F2E7;
+  --sun:#FFC247; --on-sun:#3B2A00; --accent:#2F52D0; --on-accent:#FFFFFF;
+  --sky:#CDEAF6; --ground:#B5DDA4; --cloud:#FFFFFF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1A2B; --surface:#19273D; --ink:#EAF1FA; --muted:#9DB0C8; --line:#2C3E5A;
+    --thorn:#FF6B66; --thorn-soft:#3A1F26; --calm:#4FD1A5; --calm-soft:#123A2F;
+    --sun:#FFC247; --on-sun:#3B2A00; --accent:#8AA5FF; --on-accent:#0F1A2B;
+    --sky:#1C3552; --ground:#2B5A46; --cloud:#2C4A6B;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1A2B; --surface:#19273D; --ink:#EAF1FA; --muted:#9DB0C8; --line:#2C3E5A;
+  --thorn:#FF6B66; --thorn-soft:#3A1F26; --calm:#4FD1A5; --calm-soft:#123A2F;
+  --sun:#FFC247; --on-sun:#3B2A00; --accent:#8AA5FF; --on-accent:#0F1A2B;
+  --sky:#1C3552; --ground:#2B5A46; --cloud:#2C4A6B;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%; margin:0; overflow:hidden; background:var(--bg); color:var(--ink);
+  font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  font-size:clamp(16px, 1.1vw + 11px, 24px); line-height:1.45; word-break:keep-all;
+}
+button{font:inherit; color:inherit}
+.app{position:relative; height:100%}
+.screen{position:absolute; inset:0; display:flex; flex-direction:column; min-height:0}
+.screen[hidden]{display:none}
+
+/* ---------- 무대 (애니메이션 장면) ---------- */
+.stage{position:relative; overflow:hidden; background:var(--sky); container-type:size; min-height:0}
+.cloud{position:absolute; width:22cqw; height:7cqh; border-radius:99px; background:var(--cloud); opacity:.85}
+.cloud::after{content:""; position:absolute; left:18%; top:-60%; width:46%; height:130%; border-radius:50%; background:inherit}
+.cloud.c1{top:8%; left:-25cqw; animation:drift 46s linear infinite}
+.cloud.c2{top:30%; left:-25cqw; width:16cqw; animation:drift 64s linear infinite; animation-delay:-28s}
+@keyframes drift{to{transform:translateX(150cqw)}}
+.ground{position:absolute; left:0; right:0; bottom:0; height:15%; background:var(--ground)}
+.actor{position:absolute; bottom:9%; height:min(46cqh,50cqw); aspect-ratio:100/130}
+.actor.left{left:7%}
+.actor.right{right:7%}
+.actor.mid{left:50%; margin-left:calc(min(32cqh,28cqw) * -0.3846); visibility:hidden}
+.actor.mid.on{visibility:visible}
+.stage.tri .actor{height:min(32cqh,28cqw); bottom:8%}
+.stage.tri .actor.left{left:3%}
+.stage.tri .actor.right{right:3%}
+.stage.tri .prop{left:auto; right:3%; width:calc(min(32cqh,28cqw) * 0.77); bottom:calc(8% + min(32cqh,28cqw) + 1cqh); font-size:clamp(22px,8cqmin,48px)}
+.mover{width:100%; height:100%; transform-origin:50% 100%}
+.mover svg{width:100%; height:100%; overflow:visible; transform-origin:50% 100%; animation:bob 2.8s ease-in-out infinite}
+.actor.right .mover svg{animation-delay:-1.4s}
+@keyframes bob{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.025)}}
+.actor.in.left{animation:inL .6s cubic-bezier(.2,.9,.3,1.15) both}
+.actor.in.right{animation:inR .6s .1s cubic-bezier(.2,.9,.3,1.15) both}
+@keyframes inM{from{transform:translateY(130%)}to{transform:none}}
+.actor.in.mid{animation:inM .55s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes inL{from{transform:translateX(-160%)}to{transform:none}}
+@keyframes inR{from{transform:translateX(160%)}to{transform:none}}
+.mover.jump{animation:jump .8s ease-out}
+@keyframes jump{0%,100%{transform:translateY(0)}25%{transform:translateY(-16%)}50%{transform:translateY(0)}70%{transform:translateY(-8%)}}
+.mover.cry{animation:cry .55s ease-in-out}
+@keyframes cry{0%,100%{transform:rotate(0)}20%{transform:rotate(-6deg)}50%{transform:rotate(5deg)}80%{transform:rotate(-3deg)}}
+.prop{position:absolute; left:0; right:0; bottom:13%; text-align:center; font-size:clamp(28px,11cqmin,72px); line-height:1; animation:propbob 2.2s ease-in-out infinite}
+@keyframes propbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8%)}}
+.fx{position:absolute; inset:0; pointer-events:none}
+.fx span{position:absolute; bottom:22%; font-size:clamp(18px,6cqmin,40px); animation:rise 1.5s ease-out forwards}
+@keyframes rise{0%{transform:translateY(0) scale(.5);opacity:0}15%{opacity:1}100%{transform:translateY(-62cqh) scale(1.2) rotate(25deg);opacity:0}}
+
+/* 캐릭터 표정 */
+.m{display:none}
+svg[data-mood="neutral"] .m-neutral,
+svg[data-mood="talk"] .m-talk,
+svg[data-mood="sad"] .m-sad,
+svg[data-mood="happy"] .m-happy,
+svg[data-mood="brave"] .m-brave,
+svg[data-mood="chat"] .m-chat,
+svg[data-mood="sorry"] .m-sorry{display:inline}
+svg[data-mood="happy"] .eyes{display:none}
+.eyes{transform-box:fill-box; transform-origin:center; animation:blink 4.2s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.mouth{transform-box:fill-box; transform-origin:center; animation:talk .34s ease-in-out infinite alternate}
+@keyframes talk{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+.tear{animation:tear 1.5s ease-in infinite}
+@keyframes tear{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(14px);opacity:0}}
+
+/* ---------- 말풍선 ---------- */
+.bubble{
+  --bw:min(94cqw, 44cqh*1.515);
+  position:absolute; top:4%; left:calc((100cqw - var(--bw)) / 2); width:var(--bw);
+  aspect-ratio:100/66; transform-origin:25% 100%;
+  transition:left .5s ease, top .5s ease, width .5s ease;
+}
+.bubble.mini{--bw:min(30cqw, 13cqh*1.515); left:2%; top:2%}
+.bubble.mini .bubble-text{font-size:clamp(11px, 3.6cqmin, 22px)}
+.bubble.b{--bw:min(94cqw, 46cqh*1.515); top:12%; transform-origin:50% 100%}
+.bubble.is-voice .shape,.bubble.is-voice .tail{fill:var(--surface); stroke:var(--accent)}
+.bubble-text b{font-weight:400; color:var(--accent)}
+.bubble.hidden{visibility:hidden}
+.bubble svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
+.bubble .shape,.bubble .tail{stroke-width:1.1; stroke-linejoin:round; transition:fill .5s, stroke .5s}
+.bubble.is-thorn .shape,.bubble.is-thorn .tail{fill:var(--thorn-soft); stroke:var(--thorn)}
+.bubble.is-calm .shape,.bubble.is-calm .tail{fill:var(--calm-soft); stroke:var(--calm)}
+.bubble-text{
+  position:absolute; inset:17% 14%; margin:0; display:flex; align-items:center; justify-content:center;
+  text-align:center; font-size:calc(clamp(14px, 4.5cqmin, 30px) * var(--k, 1)); line-height:1.35;
+}
+.bubble.pop{animation:pop .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{transform:scale(.15);opacity:0}to{transform:scale(1);opacity:1}}
+.bubble.shake{animation:shake .38s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.bubble.pulse{animation:pulse .5s}
+@keyframes pulse{0%,100%{transform:scale(1)}40%{transform:scale(1.06)}}
+
+/* ---------- 공통 버튼 ---------- */
+.btn{
+  display:inline-block; border:0; cursor:pointer; background:var(--accent); color:var(--on-accent);
+  padding:.7em 1.5em; border-radius:16px; font-size:1.15rem; min-height:48px;
+}
+.btn.big{font-size:1.35rem; padding:.7em 1.9em}
+.btn:focus-visible,.opt:focus-visible,.chip:focus-visible,.icon:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+.chip{
+  border:2px solid var(--line); background:var(--surface); border-radius:99px; padding:.25em 1em;
+  cursor:pointer; min-height:44px;
+}
+.chip[aria-pressed="true"]{border-color:var(--accent); background:var(--accent); color:var(--on-accent)}
+.icon{border:0; background:transparent; cursor:pointer; font-size:1.25rem; min-width:44px; min-height:44px; border-radius:12px}
+
+/* ---------- 시작 ---------- */
+.start{flex-direction:column}
+#heroStage{flex:1 1 0; min-height:180px}
+.start-body{padding:14px 20px 20px; text-align:center; overflow:auto; max-height:56%}
+.start-body h1{margin:0; font-weight:400; font-size:clamp(34px, 6vw + 8px, 68px); line-height:1.1}
+.tag{margin:6px auto 12px; color:var(--muted); max-width:34ch}
+.how{margin:0 auto 14px; max-width:38ch}
+.picker{display:flex; gap:8px; justify-content:center; margin-bottom:14px; flex-wrap:wrap}
+.picker[hidden]{display:none}
+.src{margin:14px 0 0; color:var(--muted); font-size:.85rem}
+.start-body .btn{align-self:center}
+
+/* ---------- 게임 ---------- */
+.play{display:grid; grid-template-rows:auto minmax(0,1fr) auto}
+.hud{display:flex; align-items:center; gap:10px; padding:8px 10px 8px 16px; background:var(--bg)}
+.count{min-width:4.4em}
+.segs{flex:1; display:flex; gap:3px}
+.seg{flex:1; height:8px; border-radius:99px; background:var(--line)}
+.seg.done{background:var(--calm)}
+.seg.now{background:var(--accent)}
+.score{min-width:3.6em; text-align:right}
+#stage{min-height:0}
+.panel{overflow:auto; max-height:56vh; max-height:56dvh; padding:12px 16px 16px; background:var(--bg); display:flex; flex-direction:column}
+.panel-in{margin:auto 0; width:100%; max-width:760px; align-self:center}
+.pill{display:inline-block; background:var(--sun); color:var(--on-sun); border-radius:99px; padding:1px 12px; font-size:.85rem; margin-bottom:4px}
+.q{margin:0 0 10px; font-size:1.2rem; line-height:1.35}
+.options{display:grid; gap:9px}
+.opt{
+  width:100%; text-align:left; cursor:pointer; background:var(--surface); border:2px solid var(--line);
+  border-radius:14px; padding:.6em .9em; font-size:1rem; line-height:1.4;
+}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.wrong{border-color:var(--thorn); background:var(--thorn-soft); opacity:.9}
+.opt.wrong::before{content:"✕ "; color:var(--thorn)}
+.opt.right{border-color:var(--calm); background:var(--calm-soft)}
+.opt.right::before{content:"✓ "; color:var(--calm)}
+.opt.dim{opacity:.55}
+.fb{margin-top:12px; border-radius:18px; border:2px solid; padding:12px 14px}
+.fb.good{border-color:var(--calm); background:var(--calm-soft)}
+.fb.bad{border-color:var(--thorn); background:var(--thorn-soft)}
+.fb.wait{border-color:var(--line); background:var(--surface)}
+.write{
+  display:block; width:100%; min-height:4.6em; resize:vertical; background:var(--surface); color:var(--ink);
+  border:2px solid var(--line); border-radius:14px; padding:.6em .8em; font:inherit; line-height:1.4;
+}
+.write:focus-visible{outline:3px solid var(--sun); outline-offset:2px; border-color:var(--accent)}
+.note{margin:8px 0 0; color:var(--muted); font-size:.8em}
+.quote{margin:0 0 8px; padding:8px 12px; border-left:4px solid var(--line); background:var(--surface); border-radius:10px; font-size:.95em}
+.quote .ctx{color:var(--muted); font-size:.85em; margin-bottom:4px}
+.quote .dl{margin:3px 0}
+.quote .dl b{font-weight:400; color:var(--accent)}
+.quote .fr{background:var(--thorn-soft); border-radius:8px; padding:2px 8px}
+.quote .fr b{color:var(--thorn)}
+.quote[hidden]{display:none}
+.row{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px}
+.link{background:none; border:0; cursor:pointer; color:var(--muted); text-decoration:underline; padding:8px 4px; min-height:44px}
+.link:focus-visible{outline:3px solid var(--sun); outline-offset:2px}
+.fb strong{display:block; font-size:1.1em; font-weight:400}
+.fb p{margin:0}
+.fb .btn{margin-top:10px}
+
+/* ---------- 결과 ---------- */
+.end{overflow-y:auto; flex-direction:column}
+#endStage{flex:0 0 auto; width:min(100%,760px); margin:0 auto; height:clamp(280px,46vh,440px); height:clamp(280px,46dvh,440px); border-radius:0 0 28px 28px}
+#endStage .bubble-text{font-size:clamp(16px,7.5cqmin,36px)}
+.end-body{padding:12px 20px 40px; text-align:center; width:100%; max-width:760px; margin:0 auto}
+.big{font-size:clamp(54px,9vw,88px); line-height:1.1; margin:0}
+.big small{font-size:.3em; color:var(--muted)}
+.best{color:var(--muted); margin:0 0 6px}
+.msg{max-width:34ch; margin:6px auto 16px}
+.recap-h{margin:26px 0 2px; font-size:1.3rem; font-weight:400}
+.recap-sub{margin:0 0 10px; color:var(--muted); font-size:.9rem}
+.recap{text-align:left; margin:0; padding:0; list-style:none; display:grid; gap:10px}
+.recap li{background:var(--surface); border:2px solid var(--line); border-radius:16px; padding:10px 14px}
+.recap p{margin:0; padding:2px 0}
+.lbl{display:inline-block; font-size:.78rem; border-radius:99px; padding:0 10px; margin-right:8px}
+.recap .no .lbl{background:var(--thorn-soft); color:var(--thorn); border:1.5px solid var(--thorn)}
+.recap .yes .lbl{background:var(--calm-soft); color:var(--calm); border:1.5px solid var(--calm)}
+
+/* ---------- 가로 화면(칠판·TV) ---------- */
+@media (min-width:820px) and (min-aspect-ratio:5/4){
+  .start{flex-direction:row}
+  #heroStage{flex:1.2 1 0}
+  .start-body{flex:.8 1 0; max-height:none; display:flex; flex-direction:column; justify-content:center; padding:24px 32px}
+  .play{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); grid-template-rows:auto minmax(0,1fr)}
+  .hud{grid-column:1/-1}
+  .panel{max-height:none; padding:20px 30px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important; transition:none !important}
+}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <!-- 시작 -->
+  <section id="start" class="screen start">
+    <div id="heroStage"></div>
+    <div class="start-body">
+      <h1>그러면 안 돼!<br>인권 지킴이</h1>
+      <p class="tag">가시 돋친 말 앞에서, 용기 있게 나서 주세요.</p>
+      <p class="how">모두 21개 장면이에요. 1단계에서 친구의 말이 왜 인권을 침해하는지 찾고, 2단계에서 ‘나’가 되어 ‘그러면 안 돼.’ 말풍선을 채워요.</p>
+      <div class="picker" id="modeRow" role="group" aria-label="방식" hidden>
+        <button class="chip" type="button" data-mode="card" aria-pressed="true">카드 고르기</button>
+        <button class="chip" type="button" data-mode="write" aria-pressed="false">내 말로 고쳐 쓰기 ✏️</button>
+      </div>
+      <button class="btn big" id="startBtn" type="button">용기 내어 출발!</button>
+      <p class="src">5학년 도덕 · 인권, 나와 우리부터 (교과서 78~81쪽)</p>
+    </div>
+  </section>
+
+  <!-- 게임 -->
+  <section id="play" class="screen play" hidden>
+    <header class="hud">
+      <span class="count" id="count">1 / 20</span>
+      <div class="segs" id="segs" aria-hidden="true"></div>
+      <span class="score" id="score">0점</span>
+      <button class="icon" id="soundBtn" type="button" aria-label="소리 끄기">🔊</button>
+      <button class="icon" id="fsBtn" type="button" aria-label="전체 화면">⛶</button>
+    </header>
+    <div id="stage"></div>
+    <div class="panel">
+      <div class="panel-in">
+        <span class="pill" id="stepLabel">1단계</span>
+        <p class="quote" id="quoteBox" hidden></p>
+        <p class="q" id="question"></p>
+        <div class="options" id="options"></div>
+        <div id="fb" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 결과 -->
+  <section id="end" class="screen end" hidden>
+    <div id="endStage"></div>
+    <div class="end-body">
+      <p class="big"><span id="endScore">0</span><small> / <span id="endMax">420</span>점</small></p>
+      <p class="best" id="best"></p>
+      <p class="msg" id="endMsg"></p>
+      <button class="btn big" id="againBtn" type="button">다시 하기</button>
+      <h3 class="recap-h">오늘의 인권 지킴이 말</h3>
+      <p class="recap-sub">인권 보호 안내문을 만들 때 그대로 써 봐도 좋아요.</p>
+      <ul class="recap" id="recap"></ul>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ====== 문제 데이터 ======
+   rs: 1단계 이유 선택지 (0번이 정답) / fix: 정답 바꿔 말하기 / fs: [틀린 말, 왜 틀렸는지]
+   sp, li: 말하는 사람·듣는 사람 (kid | adult | elder) / prop: 장면 이모지 / diff: 피부색 차이 장면 */
+var ITEMS = [
+  { scene:"쉬는 시간, 친구가 책상에 엎드려 울고 있어요.", prop:"😢",
+    q:"남자가 울긴 왜 울어? 남자는 씩씩해야지!",
+    rs:["성별을 이유로 감정을 표현하지 못하게 하고, 사람을 다르게 대하기 때문이에요.",
+        "친구가 울면 다른 사람들이 걱정하기 때문이에요.",
+        "교실에서는 조용히 말해야 하기 때문이에요."],
+    fix:"무슨 일 있었어? 울고 싶을 땐 울어도 괜찮아.",
+    fs:[["남자든 여자든 우는 건 부끄러운 일이야.","우는 것을 부끄러운 일로 만들어 마음을 더 힘들게 해요."],
+        ["그만 울고 저리 가. 시끄러워.","친구의 마음을 무시하는 말이에요."]] },
+
+  { scene:"모둠 활동 중, 친구가 종이접기를 어려워해요.", prop:"📄",
+    q:"이것도 못 하니? 너 바보냐?",
+    rs:["상대방의 마음과 인격을 존중하지 않는 표현이기 때문이에요.",
+        "활동 시간이 부족해지기 때문이에요.",
+        "수업 시간에는 말을 하면 안 되기 때문이에요."],
+    fix:"어렵지? 나도 처음엔 그랬어. 같이 해 볼까?",
+    fs:[["이것도 못 하니? 연습 좀 하고 와.","‘이것도 못 하니’가 그대로 들어 있어요. 상대를 깎아내리는 말이에요."],
+        ["그냥 내가 다 할게. 넌 가만히 있어.","친구가 참여할 기회를 빼앗고 무시하는 말이 될 수 있어요."]] },
+
+  { scene:"전학 온 친구가 다른 나라에서 왔다고 소개했어요.", prop:"🌏",
+    q:"그 나라 사람들은 원래 다 그래.",
+    rs:["특정 집단에 대한 편견을 갖게 만들기 때문이에요.",
+        "친구의 소개 시간이 길어지기 때문이에요.",
+        "나라 이름을 정확하게 말하지 않았기 때문이에요."],
+    fix:"나라가 같아도 사람마다 다르잖아. 너는 어떤 사람인지 알고 싶어!",
+    fs:[["그 나라 사람들은 다 그렇지만, 너는 좀 달라 보여.","여전히 한 나라 사람들을 하나로 묶어서 편견을 갖고 있어요."],
+        ["우리나라 말을 잘해야 친구 할 수 있어.","친구가 될 조건을 달아서 차별하는 말이에요."]] },
+
+  { scene:"급식 시간, 친구의 몸집을 보고 별명이 튀어나왔어요.", prop:"🍚",
+    q:"야, 뚱땡아! 너 또 더 먹냐?",
+    rs:["외모를 놀리는 말은 친구의 마음에 상처를 주고 존중하지 않는 표현이기 때문이에요.",
+        "급식을 더 먹으면 안 되기 때문이에요.",
+        "별명이 길어서 부르기 어렵기 때문이에요."],
+    fix:"○○야, 오늘 급식 맛있다! 같이 먹자.",
+    fs:[["야, 통통아! 귀엽다고 하는 말이야.","귀엽다고 해도 친구가 싫어하는 별명이면 상처가 돼요."],
+        ["살 좀 빼야 하지 않아? 건강 생각해서 하는 말이야.","걱정하는 척해도 외모를 평가하는 말이에요."]] },
+
+  { scene:"친구의 말투를 흉내 내며 깔깔 웃고 있어요.", prop:"🗨️",
+    q:"ㅋㅋ 말투 웃기다! 장난인데 왜 화내?",
+    rs:["재미로라도 상대의 말투나 행동을 따라 하면 상대가 불쾌해지고 인권 침해가 될 수 있기 때문이에요.",
+        "장난을 치면 수업에 집중이 안 되기 때문이에요.",
+        "친구가 화를 내서 분위기가 나빠졌기 때문이에요."],
+    fix:"미안해, 네 기분을 생각하지 못했어. 이제 따라 하지 않을게.",
+    fs:[["알았어, 장난인데 네가 너무 예민한 거야.","상대의 마음을 탓하는 말이에요. 사과가 아니에요."],
+        ["그럼 이제 말 안 걸게. 마음대로 해.","화난 친구의 마음을 풀어 주기보다 관계를 끊어 버리는 말이에요."]] },
+
+  { scene:"친구가 급식 먹는 모습을 몰래 사진으로 찍었어요.", prop:"📷",
+    q:"네 사진 찍었어! 단톡방에 올릴 거야~",
+    rs:["다른 사람의 동의 없이 사진을 찍고 마음대로 공유하는 것은 인권 침해이기 때문이에요.",
+        "사진이 흔들려서 예쁘게 나오지 않기 때문이에요.",
+        "단톡방에는 공부 이야기만 해야 하기 때문이에요."],
+    fix:"사진 찍어도 될까? 단톡방에 올려도 괜찮은지도 물어볼게.",
+    fs:[["이미 찍었으니까 올릴게. 싫으면 나중에 말해.","허락을 먼저 구하지 않았어요. 동의는 올리기 전에 받아야 해요."],
+        ["사진 올릴게. 웃기게 나왔어.","동의 없이 올리고 놀리기까지 하면 문제가 더 커져요."]] },
+
+  { scene:"키오스크 앞에서 할아버지가 주문을 어려워하고 계세요.", prop:"🖥️", sp:"adult", li:"elder",
+    q:"할아버지, 빨리 좀 하세요! 뒤에 사람들 기다리잖아요.",
+    rs:["나이 때문에 겪는 어려움을 이해하지 않고 재촉해서 존중받지 못하게 하기 때문이에요.",
+        "키오스크가 고장 날 수 있기 때문이에요.",
+        "공공장소에서는 큰 소리로 말하면 안 되기 때문이에요."],
+    fix:"도와드릴까요? 천천히 하셔도 괜찮아요.",
+    fs:[["이건 젊은 사람들이 쓰는 거예요. 저쪽 줄로 가세요.","나이를 이유로 이용할 권리를 막는 차별이에요."],
+        ["그냥 제가 눌러 드릴게요. 가만히 계세요.","어르신의 의견을 묻지 않고 대신 해 버리는 말이에요."]] },
+
+  { scene:"새로 짝이 된 친구는 피부색이 나와 달라요.", prop:"🪑", diff:true,
+    q:"난 너랑 짝 하기 싫어. 나랑 달라서 무서워.",
+    rs:["겉모습이 다르다는 이유로 차별하고 친구를 소외시키기 때문이에요.",
+        "짝을 바꾸려면 선생님께 허락을 받아야 하기 때문이에요.",
+        "친구가 먼저 말을 걸지 않았기 때문이에요."],
+    fix:"겉모습은 달라도 같은 친구야. 같이 앉아서 이야기해 보자!",
+    fs:[["너랑 짝은 해 줄게. 대신 나한테 말은 걸지 마.","함께 앉아 있어도 존중하지 않는 말이에요."],
+        ["너 피부색 진짜 신기하다. 만져 봐도 돼?","신기하다며 몸을 구경거리로 삼는 건 존중이 아니에요."]] },
+
+  { scene:"친구의 집 주소와 전화번호를 알고 있어요.", prop:"📞",
+    q:"얘 집 주소랑 번호, 내가 단톡방에 알려 줄게!",
+    rs:["허락 없이 개인 정보를 함부로 알리면 친구의 안전과 사생활이 위험해지기 때문이에요.",
+        "단톡방에 글이 너무 많아지기 때문이에요.",
+        "집 주소는 외우기 어렵기 때문이에요."],
+    fix:"개인 정보는 본인이 허락해야 알릴 수 있어. 먼저 물어볼게.",
+    fs:[["친한 친구니까 알려도 괜찮을 거야.","친해도 개인 정보는 그 친구의 것이에요. 허락이 필요해요."],
+        ["주소만 알리고 번호는 안 알릴게.","일부라도 허락 없이 알리면 침해예요."]] },
+
+  { scene:"친구가 하기 싫다고 했는데 억지로 시키고 있어요.", prop:"📚",
+    q:"내 숙제 네가 해 와. 안 하면 나랑 안 놀아!",
+    rs:["원하지 않는 일을 억지로 시키는 것은 상대의 권리와 자유를 침해하기 때문이에요.",
+        "숙제 양이 너무 많기 때문이에요.",
+        "친구와 같이 놀 시간이 줄어들기 때문이에요."],
+    fix:"숙제가 어려운데 같이 풀어 볼래? 괜찮을 때 도와줘.",
+    fs:[["안 해 주면 간식 사 줄게. 해 줘!","보상을 걸어도 원하지 않는 일을 시키는 거예요."],
+        ["그럼 하기 싫으면 하지 마. 대신 비밀 다 말할 거야.","협박은 더 심한 인권 침해예요."]] },
+
+  { scene:"놀이터에서 휠체어를 탄 친구가 미끄럼틀 쪽으로 다가와요.", prop:"♿",
+    q:"넌 못 타니까 저기서 구경이나 해.",
+    rs:["장애를 이유로 함께 놀고 시설을 이용할 권리를 막기 때문이에요.",
+        "미끄럼틀 앞에서는 순서를 지켜야 하기 때문이에요.",
+        "놀이터에 사람이 너무 많기 때문이에요."],
+    fix:"같이 놀 방법을 찾아보자. 어떻게 하면 모두 즐길 수 있을까?",
+    fs:[["이건 아쉽지만 우리끼리 놀게. 다음에 같이 놀자.","친구를 빼고 노는 것은 함께할 기회를 막는 말이에요."],
+        ["힘들 테니까 내가 다 정해 줄게. 넌 앉아만 있어.","친구의 의견을 묻지 않고 대신 결정하는 말이에요."]] },
+
+  { scene:"일자리를 구하러 온 어르신이 면접을 보고 있어요.", prop:"💼", sp:"adult", li:"elder",
+    q:"나이가 많아서 우리 가게에선 안 뽑아요.",
+    rs:["나이를 이유로 일할 기회를 주지 않고 차별하기 때문이에요.",
+        "면접 시간이 길어지기 때문이에요.",
+        "가게에 직원이 너무 많아지기 때문이에요."],
+    fix:"나이와 상관없이 하실 수 있는 일을 보고 이야기를 나눠 볼게요.",
+    fs:[["나이 많은 분은 힘든 일을 못 하실 거예요. 쉬세요.","나이만 보고 능력을 단정 짓는 말이에요."],
+        ["나이는 많지만 월급을 적게 주면 뽑아 줄게요.","나이를 이유로 부당한 대우를 하는 말이에요."]] },
+
+  { scene:"청소 시간, 빗자루를 든 친구들이 서 있어요.", prop:"🧹",
+    q:"여자가 청소해야지, 남자는 놀아도 돼.",
+    rs:["성별에 따라 사람을 다르게 대우하고 할 일을 정하기 때문이에요.",
+        "청소 시간이 길어지기 때문이에요.",
+        "빗자루가 하나뿐이기 때문이에요."],
+    fix:"청소는 모두 같이 하는 거야. 역할을 나눠서 함께 하자.",
+    fs:[["남자는 무거운 것만 하고 여자는 비질만 해.","여전히 성별로 일을 나누는 말이에요."],
+        ["그럼 아무도 청소하지 말자.","함께 책임을 나누는 방법이 아니에요."]] },
+
+  { scene:"부모님과 식당에 갔는데 입구에서 사장님이 막아요.", prop:"🍽️", sp:"adult",
+    q:"어린이는 시끄러우니까 우리 식당에 들어오면 안 돼요.",
+    rs:["나이를 이유로 식당을 이용할 권리를 막는 차별이기 때문이에요.",
+        "식당이 너무 좁기 때문이에요.",
+        "메뉴가 어린이에게 맞지 않기 때문이에요."],
+    fix:"어서 오세요. 아이도 편하게 식사할 수 있게 도와드릴게요.",
+    fs:[["어린이는 구석 자리에서만 먹어야 해요.","나이를 이유로 자리를 정해 버리는 차별이에요."],
+        ["어른이 두 명 있어야 들어올 수 있어요.","나이를 이유로 조건을 붙여 이용을 막는 말이에요."]] },
+
+  { scene:"다른 나라에서 온 아저씨가 일을 마치고 월급을 받으러 왔어요.", prop:"💰", sp:"adult", li:"adult",
+    q:"외국인이니까 월급은 반만 줄게. 불만이면 그만둬.",
+    rs:["다른 나라에서 왔다는 이유로 정당한 대우와 임금을 주지 않기 때문이에요.",
+        "월급 계산이 어렵기 때문이에요.",
+        "일을 천천히 했기 때문이에요."],
+    fix:"어느 나라 사람이든 같은 일을 하면 같은 월급을 드려야죠.",
+    fs:[["월급은 똑같이 주지만 인사는 안 할게요.","임금은 같아도 존중하지 않는 태도예요."],
+        ["이번엔 반만 주고 다음에 더 줄게요.","정당한 임금을 주지 않는 것 자체가 침해예요."]] },
+
+  { scene:"시험 결과가 나온 뒤, 모둠을 짜고 있어요.", prop:"📝",
+    q:"너는 공부도 못하는데 우리 모둠에 오지 마.",
+    rs:["성적을 이유로 친구를 소외시키고 존중하지 않기 때문이에요.",
+        "모둠 인원이 정해져 있기 때문이에요.",
+        "시험 결과를 말하면 안 되기 때문이에요."],
+    fix:"우리 모둠에 와. 잘하는 게 서로 다르니까 같이 하면 돼.",
+    fs:[["너는 청소만 해. 공부는 우리가 할게.","능력을 단정 지어 역할을 정해 버리는 말이에요."],
+        ["우리 모둠에 와도 돼. 대신 말은 하지 마.","함께하는 것 같지만 의견을 낼 권리를 막는 말이에요."]] },
+
+  { scene:"급식 시간, 친구가 먹지 않는 반찬이 있어요.", prop:"🍱",
+    q:"왜 그것도 안 먹어? 유난 떨지 마!",
+    rs:["사람마다 다른 생각과 생활 방식을 존중하지 않기 때문이에요.",
+        "급식 시간이 늦어지기 때문이에요.",
+        "반찬이 남아서 아깝기 때문이에요."],
+    fix:"그렇구나, 이유가 있겠지. 네가 먹을 수 있는 걸로 먹어도 돼.",
+    fs:[["남들 보기에 이상하니까 그냥 먹어.","남의 시선 때문에 자기 선택을 포기하게 하는 말이에요."],
+        ["선생님께 이를 거야. 안 먹는다고!","친구를 곤란하게 만드는 말이에요."]] },
+
+  { scene:"친구에 대한 이상한 소문을 들었어요.", prop:"🗣️",
+    q:"걔 소문 들었어? 확실하진 않은데 다 퍼뜨리자!",
+    rs:["근거 없는 소문으로 친구의 명예와 마음을 해치기 때문이에요.",
+        "소문 이야기는 재미가 없기 때문이에요.",
+        "이야기하면 쉬는 시간이 줄어들기 때문이에요."],
+    fix:"확실하지 않은 이야기는 하지 말자. 그 친구가 속상할 수 있어.",
+    fs:[["조용히 우리끼리만 말하자. 비밀이야.","퍼지지 않아도 친구를 험담하는 것은 마찬가지예요."],
+        ["소문이 맞는지 여기저기 물어보고 다닐까?","친구 이야기를 묻고 다니면 오히려 더 퍼져요."]] },
+
+  { scene:"단톡방에서 한 친구에게만 답장을 하지 않고 있어요.", prop:"💬",
+    q:"쟤는 빼고 우리끼리 새 단톡방 만들자.",
+    rs:["친구를 따돌려서 소외시키고 마음에 상처를 주기 때문이에요.",
+        "단톡방이 너무 많아지기 때문이에요.",
+        "휴대전화 요금이 늘어나기 때문이에요."],
+    fix:"다 같이 이야기할 수 있게 그 친구도 초대하자.",
+    fs:[["그 친구는 읽기만 하고 말은 못 하게 하자.","함께 있어도 말할 권리를 막는 따돌림이에요."],
+        ["일단 빼고, 나중에 분위기 보고 넣자.","따돌림을 잠시 미루는 것일 뿐이에요."]] },
+
+  { scene:"복도에서 친구와 부딪혀 기분이 나빠졌어요.", prop:"🚸",
+    q:"야, 어디 보고 다녀! (친구를 확 민다)",
+    rs:["말과 몸으로 하는 폭력은 다른 사람의 인권을 침해하기 때문이에요.",
+        "복도에서는 뛰면 안 되기 때문이에요.",
+        "친구가 먼저 사과하지 않았기 때문이에요."],
+    fix:"미안해, 밀어서. 다음엔 말로 이야기할게.",
+    fs:[["다음엔 안 밀 테니까 너도 사과해.","사과에 조건을 거는 말이에요."],
+        ["다치지 않았으니까 괜찮지?","상대의 마음을 살피지 않고 넘기는 말이에요."]] },
+
+  { scene:"우리 반 규칙을 어긴 친구가 고개를 숙이고 있어요.", prop:"🏫",
+    q:"너 때문에 우리 반 망했어! 넌 우리 반에 필요 없어.",
+    rs:["잘못했더라도 그 사람의 존재를 부정하고 존중하지 않기 때문이에요.",
+        "큰 소리로 말하면 안 되기 때문이에요.",
+        "규칙은 선생님이 정하는 것이기 때문이에요."],
+    fix:"규칙은 지켜야 하지만, 너도 우리 반 친구야. 다음엔 같이 지키자.",
+    fs:[["다음에도 어기면 우리 반에서 쫓아낼 거야.","협박하는 말이에요."],
+        ["그냥 모르는 척할게.","관심을 끊는 것도 친구를 존중하는 것이 아니에요."]] }
+];
+
+
+/* ====== 간이 판정 데이터 (계정 없이 글자를 보고 판단) ======
+   ok: 문제의 핵심 생각이 담긴 표현 / bad: 원래 말의 가시가 남은 표현 / hint: 다시 써 볼 때 주는 힌트 */
+var J = [
+  { ok:["울어도","괜찮","무슨일","왜그래","속상","힘들","위로","곁에","옆에","토닥"],
+    bad:["씩씩해야","남자답","여자답","울면안","그만울","부끄러","시끄러"],
+    hint:"우는 친구의 마음을 먼저 살피는 말을 넣어 볼까요?" },
+  { ok:["도와","같이","함께","어렵","처음","천천히","알려","가르쳐"],
+    bad:["이것도못","못하니","가만히있어","연습좀"],
+    hint:"어려워하는 친구를 도와주거나 함께하자는 말을 넣어 볼까요?" },
+  { ok:["사람마다","다르잖","알고싶","어떤사람","궁금","반가","환영","같이"],
+    bad:["원래다","원래그","다그래","다그렇지만","말을잘해야","잘해야친구"],
+    hint:"나라가 아니라 그 친구 한 사람을 알고 싶다는 마음을 담아 볼까요?" },
+  { ok:["이름","같이","먹자","맛있","함께"],
+    bad:["뚱","통통","살빼","살좀","돼지","더먹냐","또먹냐","건강생각"],
+    hint:"외모 대신 친구를 이름으로 부르거나 함께하자는 말을 넣어 볼까요?" },
+  { ok:["미안","사과","따라하지","흉내내지","기분"],
+    bad:["예민","장난인데","웃기다","웃겨","화내","말안걸"],
+    hint:"상대의 기분을 헤아리는 사과의 말을 넣어 볼까요?" },
+  { ok:["물어","허락","동의","찍어도","올려도","될까","괜찮을까","괜찮니","괜찮은지"],
+    bad:["웃기게","싫으면나중","이미찍었"],
+    hint:"찍거나 올리기 전에 먼저 허락을 구하는 말을 넣어 볼까요?" },
+  { ok:["도와","천천히","괜찮","기다릴게","편하게","도움"],
+    bad:["빨리하세요","빨리좀","젊은사람","저쪽줄","가만히"],
+    hint:"어르신께 도움을 드리겠다는 말이나 천천히 하셔도 된다는 말을 넣어 볼까요?" },
+  { ok:["같은친구","이야기","앉","놀자","같이","함께"],
+    bad:["무서","신기","만져","말은걸지","싫어"],
+    hint:"겉모습이 달라도 같은 친구라는 마음을 담아 볼까요?" },
+  { ok:["허락","물어","동의","본인","괜찮은지","안알릴","알리지"],
+    bad:["친한친구니까","일부만","주소만"],
+    hint:"알리기 전에 친구의 허락을 먼저 구하는 말을 넣어 볼까요?" },
+  { ok:["같이","도와","함께","괜찮을때","어려운","풀어","부탁"],
+    bad:["안놀아","안하면","비밀","간식사줄"],
+    hint:"억지로 시키지 않고, 도움을 부탁하거나 함께하자는 말로 바꿔 볼까요?" },
+  { ok:["같이","함께","방법","어떻게","모두","즐길","타볼","타자","놀자"],
+    bad:["구경이나","못타니까","우리끼리","앉아만","가만히"],
+    hint:"함께 놀 방법을 같이 찾아보자는 말을 넣어 볼까요?" },
+  { ok:["능력","경험","나이와상관","나이상관","나이는상관","할수있","이야기를나눠","이야기해"],
+    bad:["나이가많","나이많","안뽑","쉬세요","월급을적게","나이는많"],
+    hint:"나이가 아니라 하실 수 있는 일과 경험을 보고 이야기하겠다는 말을 넣어 볼까요?" },
+  { ok:["같이","함께","나눠","역할","모두","다같이","골고루"],
+    bad:["여자가청소","남자는놀","남자는무거운","여자는비질","아무도청소"],
+    hint:"성별과 상관없이 모두 함께 나눠서 하자는 말로 바꿔 볼까요?" },
+  { ok:["어서오세요","환영","편하게","도와드릴","들어오세요","드릴게요","손님","들어오게","이용"],
+    bad:["구석","두명","시끄러우니","들어오면안","어른이"],
+    hint:"어린이도 편하게 이용할 수 있다는 환영의 말을 넣어 볼까요?" },
+  { ok:["같은월급","똑같이","같은일","같은임금","정당","차별없","똑같은","제대로"],
+    bad:["반만","그만둬","외국인이니까","다음에더","인사는안"],
+    hint:"어느 나라 사람이든 같은 일을 하면 같은 대우를 하겠다는 말을 넣어 볼까요?" },
+  { ok:["같이","함께","잘하는","서로","도와","같은모둠","우리모둠"],
+    bad:["공부도못","오지마","청소만","말은하지","말은하"],
+    hint:"서로 다르게 잘하는 것을 인정하고 함께하자는 말을 넣어 볼까요?" },
+  { ok:["이유","그렇구나","존중","먹을수있는","네가먹을","편하게","골라"],
+    bad:["유난","그냥먹어","이를거","일러","선생님께이"],
+    hint:"친구의 선택과 이유를 인정해 주는 말을 넣어 볼까요?" },
+  { ok:["퍼뜨리지","말하지말","하지말자","하지말","확실하지","속상","직접물어","본인에게"],
+    bad:["퍼뜨리자","다퍼뜨","우리끼리만","물어보고다닐","비밀이야"],
+    hint:"확실하지 않은 이야기는 퍼뜨리지 말자는 말로 바꿔 볼까요?" },
+  { ok:["초대","같이","함께","다같이","넣자","이야기"],
+    bad:["빼고","읽기만","분위기보고","새단톡"],
+    hint:"그 친구도 함께 이야기할 수 있게 초대하자는 말로 바꿔 볼까요?" },
+  { ok:["미안","사과","말로","조심","다쳤","괜찮니","괜찮아?"],
+    bad:["어디보고","확밀","너도사과","안다쳤","다치지않았"],
+    hint:"먼저 사과하고 다음에는 말로 이야기하겠다는 말을 넣어 볼까요?" },
+  { ok:["같은친구","친구야","같이지","함께지","다음엔","지키자","도와"],
+    bad:["필요없","망했","쫓아","모르는척"],
+    hint:"잘못을 짚으면서도 같은 친구로 존중하고 함께 지키자는 말을 넣어 볼까요?" }
+];
+ITEMS.forEach(function(it, i){ it.j = J[i]; });
+
+var EX = [
+  "남자도 여자도 울 수 있어. 슬픈 친구의 마음을 먼저 들어 줘야 돼.",
+  "그렇게 말하면 친구 마음이 아파. 어려워하면 도와줘야 돼.",
+  "나라가 같아도 사람마다 달라. 그 친구가 어떤 사람인지 알아 가야 돼.",
+  "외모로 놀리면 마음이 아파. 친구 이름을 불러 줘야 돼.",
+  "말투를 따라 하면 기분이 나빠. 상대의 기분을 생각해야 돼.",
+  "허락 없이 찍고 올리면 안 되는 거야. 먼저 물어봐야 돼.",
+  "어르신도 천천히 하실 권리가 있어요. 도와드려야 해요.",
+  "겉모습이 달라도 똑같은 친구야. 같이 지내야 돼.",
+  "개인 정보는 그 친구 거야. 허락을 받아야 돼.",
+  "억지로 시키는 건 친구의 권리를 막는 거야. 부탁할 땐 정중히 물어봐야 돼.",
+  "휠체어를 타도 같이 놀 권리가 있어. 같이 놀 방법을 찾아야 돼.",
+  "나이로 일할 기회를 막으면 차별이에요. 하실 수 있는 일을 봐 주세요.",
+  "성별로 할 일을 나누면 불공평해. 청소는 다 같이 해야 돼.",
+  "나이로 식당을 못 들어오게 하는 건 차별이에요. 모두 편하게 이용하게 해 주세요.",
+  "나라가 달라도 같은 일을 하면 같은 월급을 주셔야 해요.",
+  "성적으로 친구를 빼면 안 돼. 서로 잘하는 걸 인정해야 돼.",
+  "사람마다 생각과 생활 방식이 달라. 친구의 선택을 존중해야 돼.",
+  "확인 안 된 소문은 친구에게 상처가 돼. 퍼뜨리지 말아야 돼.",
+  "친구를 따돌리면 마음이 아파. 모두 같이 이야기할 수 있게 해야 돼.",
+  "말이나 몸으로 때리면 폭력이야. 불편하면 말로 이야기해야 돼.",
+  "잘못했어도 존중받아야 해. 같이 규칙을 지킬 방법을 찾아야 돼."
+];
+ITEMS.forEach(function(it, i){ it.ex = EX[i]; });
+
+/* ====== 대화 장면: ‘나’(가운데)가 말을 걸고, 친구(왼쪽)가 가시 돋친 말로 대답해요 ====== */
+var CTX = [
+  { scene:"(쉬는 시간, 친구가 책상에 엎드려 훌쩍이고 있어요.)",
+    pre:"쟤 왜 저러고 있어?",
+    q:"아까 시험 망쳤대. 근데 남자가 울긴 왜 울어? 남자는 씩씩해야지!" },
+  { scene:"(모둠 활동 시간, 한 친구가 종이접기를 어려워하며 끙끙대고 있어요.)",
+    pre:"이거 접는 거 진짜 어렵다. 나도 헷갈려.",
+    q:"난 벌써 다 했는데? 야, 이것도 못 하니? 너 바보냐?" },
+  { scene:"(아파서 책상에 엎드려 있는 외국인 전학생을 보며)",
+    pre:"쟤는 왜 자고 있지?",
+    q:"쟤 프랑스에서 온 애 아냐? 원래 그 나라 사람들 엄청 게으르다잖아~" },
+  { scene:"(급식 시간, 한 친구가 밥을 한 번 더 받아 왔어요.)",
+    pre:"오늘 급식 진짜 맛있다!",
+    q:"야, 뚱땡아! 너 또 더 먹냐?" },
+  { scene:"(새로 전학 온 친구가 사투리로 발표를 하고 자리에 앉았어요.)",
+    pre:"방금 발표 잘하지 않았어?",
+    q:"ㅋㅋ 말투 웃기다! 나 따라 해 볼래. 장난인데 왜 화내?" },
+  { scene:"(급식 시간, 한 친구가 입에 음식을 가득 넣고 웃고 있어요.)",
+    pre:"야, 뭐 하는 거야?",
+    q:"방금 쟤 사진 찍었어! 웃기게 나왔어. 단톡방에 올릴 거야~" },
+  { scene:"(식당 키오스크 앞에서 할아버지가 주문 화면을 못 찾으세요. 뒤에 줄이 길어요.)",
+    pre:"할아버지가 버튼을 못 찾으시나 봐요.",
+    q:"아, 진짜! 할아버지, 빨리 좀 하세요! 뒤에 사람들 기다리잖아요.", ln:"뒤에 선 사람" },
+  { scene:"(새 학기 첫날, 선생님이 새로 온 친구와 짝을 하라고 하세요.)",
+    pre:"너는 이번에 누구랑 짝이야?",
+    q:"난 쟤야. 근데 난 쟤랑 짝 하기 싫어. 나랑 피부색이 달라서 무서워." },
+  { scene:"(단톡방에서 이사 간 친구 이야기를 하고 있어요.)",
+    pre:"하준이 이사 갔다며? 어디로 갔어?",
+    q:"나 걔 집 주소랑 전화번호 알아! 내가 단톡방에 다 알려 줄게!" },
+  { scene:"(쉬는 시간, 복도에서 친구 둘이 이야기해요.)",
+    pre:"수학 숙제 다 했어?",
+    q:"아니. 야, 내 숙제 네가 해 와. 안 하면 나랑 안 놀아!" },
+  { scene:"(놀이터에서 휠체어를 탄 친구가 미끄럼틀 쪽으로 다가와요.)",
+    pre:"우리 미끄럼틀 같이 탈까?",
+    q:"어, 쟤도 왔네. 넌 못 타니까 저기서 구경이나 해." },
+  { scene:"(가게 사장님이 일자리를 구하러 온 할머니와 면접을 보고 있어요.)",
+    pre:"사장님, 이 할머니 요리 경력이 엄청 많으시대요.",
+    q:"그래도 나이가 많아서 우리 가게에선 안 뽑아요.", ln:"사장님" },
+  { scene:"(청소 시간, 모둠 친구들이 빗자루를 들고 모였어요.)",
+    pre:"누가 먼저 쓸까?",
+    q:"여자애들이 청소해야지. 남자는 놀아도 돼." },
+  { scene:"(부모님과 식당에 갔는데, 입구에서 사장님이 막아요.)",
+    pre:"엄마, 왜 안 들어가요?",
+    q:"죄송하지만 어린이는 시끄러우니까 우리 식당에 들어오면 안 돼요.", ln:"사장님" },
+  { scene:"(공사장 사장님이 일을 마친 외국인 아저씨에게 월급을 주고 있어요.)",
+    pre:"사장님, 저 아저씨 오늘도 제일 열심히 일하셨어요.",
+    q:"그래도 외국인이니까 월급은 반만 줄게. 불만이면 그만둬.", ln:"사장님" },
+  { scene:"(시험 결과가 나온 뒤, 모둠을 짜고 있어요.)",
+    pre:"우리 모둠에 한 명 더 필요하대.",
+    q:"쟤는 안 돼. 너는 공부도 못하는데 우리 모둠에 오지 마." },
+  { scene:"(급식 시간, 한 친구가 반찬 하나만 남기고 있어요.)",
+    pre:"쟤는 왜 저 반찬만 안 먹지?",
+    q:"왜 그것도 안 먹어? 유난 떨지 마!" },
+  { scene:"(쉬는 시간, 친구들이 모여 속닥거려요.)",
+    pre:"무슨 얘기하는 거야?",
+    q:"걔 소문 들었어? 확실하진 않은데 다 퍼뜨리자!" },
+  { scene:"(친구들이 단톡방에서 방학 계획을 이야기해요.)",
+    pre:"다 같이 방학 때 놀러 갈 사람?",
+    q:"쟤는 빼고 우리끼리 새 단톡방 만들자." },
+  { scene:"(복도에서 두 친구가 부딪혔어요.)",
+    pre:"어, 괜찮아? 많이 아프겠다.",
+    q:"야, 어디 보고 다녀! (친구를 확 민다)" },
+  { scene:"(우리 반 규칙을 어긴 친구가 고개를 숙이고 있어요.)",
+    pre:"선생님이 다음부터 지키면 괜찮대.",
+    q:"너 때문에 우리 반 망했어! 넌 우리 반에 필요 없어." }
+];
+ITEMS.forEach(function(it, i){ var c = CTX[i]; it.scene = c.scene; it.pre = c.pre; it.q = c.q; it.ln = c.ln || "친구"; it.hon = !!c.ln; });
+
+
+
+var BEST_KEY = "word-swap-best-v2";
+var rounds = ITEMS.length;
+
+/* ====== 유틸 ====== */
+function $(s, r){ return (r || document).querySelector(s); }
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a){
+  a = a.slice();
+  for (var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function reduceMotion(){ return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }
+function restart(el, cls, ms){
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  if (ms) setTimeout(function(){ el.classList.remove(cls); }, ms);
+}
+
+/* ====== 소리 ====== */
+var audioCtx = null, soundOn = true;
+function tone(seq){
+  if (!soundOn) return;
+  try{
+    var ctx = audioCtx || (audioCtx = new (window.AudioContext || window.webkitAudioContext)());
+    var t = ctx.currentTime;
+    seq.forEach(function(f){
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.19);
+      t += 0.12;
+    });
+  }catch(e){}
+}
+
+/* ====== 캐릭터 ====== */
+var SKINS = ["#F6D3B3", "#E8B98F", "#C98D63", "#9A6544", "#6E4630"];
+var HAIRS = ["#2B1B12", "#4A2E1F", "#7A4A2A", "#1D1D26", "#B5651D"];
+var SHIRTS = ["#FF8A65", "#4FC3F7", "#FFD54F", "#81C784", "#BA68C8", "#F06292"];
+var STYLES = ["short", "bob", "bun", "spiky"];
+
+function mk(type, skin, shirt){
+  if (type === "elder") return { skin: skin, shirt: shirt, hair: "#D9DDE3", style: "elder", glasses: true, brow: "#8A8F98" };
+  return { skin: skin, shirt: shirt, hair: pick(HAIRS), style: pick(STYLES), glasses: false, brow: "#2B2B2B" };
+}
+function makeLooks(it){
+  var a, b;
+  if (it.diff){
+    var flip = Math.random() < 0.5, lo = [SKINS[0], SKINS[1]], hi = [SKINS[3], SKINS[4]];
+    a = pick(flip ? lo : hi); b = pick(flip ? hi : lo);
+  } else { a = pick(SKINS); b = pick(SKINS); }
+  var s1 = pick(SHIRTS), s2; do { s2 = pick(SHIRTS); } while (s2 === s1);
+  var s3; do { s3 = pick(SHIRTS); } while (s3 === s1 || s3 === s2);
+  return [mk(it.sp || "kid", a, s1), mk(it.li || "kid", b, s2), mk("kid", pick(SKINS), s3)];
+}
+function actorSVG(L){
+  var h = L.hair, s = L.skin, br = L.brow, back = "", top;
+  if (L.style === "bob") back = '<path d="M15 56 A35 35 0 0 1 85 56 L85 86 Q85 94 77 94 L23 94 Q15 94 15 86 Z" fill="' + h + '"/>';
+  if (L.style === "bun") back = '<circle cx="50" cy="15" r="11" fill="' + h + '"/>';
+  if (L.style === "elder") back = '<circle cx="21" cy="52" r="10" fill="' + h + '"/><circle cx="79" cy="52" r="10" fill="' + h + '"/>';
+  if (L.style === "spiky") top = '<path d="M20 48 L23 24 L34 36 L42 16 L52 34 L62 16 L68 36 L78 24 L80 48 Q72 36 50 36 Q28 36 20 48 Z" fill="' + h + '"/>';
+  else if (L.style === "elder") top = '<path d="M22 44 A30 30 0 0 1 78 44 Q66 32 50 32 Q34 32 22 44 Z" fill="' + h + '"/>';
+  else top = '<path d="M20 50 A30 30 0 0 1 80 50 Q74 34 50 34 Q26 34 20 50 Z" fill="' + h + '"/>';
+  var glasses = L.glasses ? '<g fill="none" stroke="#3a3a3a" stroke-width="2"><circle cx="38" cy="52" r="8.5"/><circle cx="62" cy="52" r="8.5"/><path d="M46.5 52 H53.5"/></g>' : "";
+  var st = 'stroke="' + br + '" stroke-width="3" stroke-linecap="round" fill="none"';
+  return '<svg viewBox="0 0 100 130" data-mood="neutral" aria-hidden="true">' +
+    '<rect x="22" y="86" width="56" height="44" rx="22" fill="' + L.shirt + '"/>' +
+    '<circle cx="17" cy="112" r="7" fill="' + s + '"/><circle cx="83" cy="112" r="7" fill="' + s + '"/>' +
+    '<rect x="43" y="76" width="14" height="16" fill="' + s + '"/>' +
+    back +
+    '<circle cx="50" cy="50" r="30" fill="' + s + '"/>' +
+    top + glasses +
+    '<g class="eyes"><ellipse cx="38" cy="52" rx="3.4" ry="4.4" fill="#1b1b1b"/><ellipse cx="62" cy="52" rx="3.4" ry="4.4" fill="#1b1b1b"/></g>' +
+    '<g class="m m-neutral"><path d="M31 43 H44 M56 43 H69" ' + st + '/><path d="M43 68 H57" stroke="#7a3b3b" stroke-width="3" stroke-linecap="round"/></g>' +
+    '<g class="m m-talk"><path d="M31 40 L44 45 M69 40 L56 45" ' + st + '/><ellipse class="mouth" cx="50" cy="68" rx="8" ry="6" fill="#7a2e2e"/></g>' +
+    '<g class="m m-sad"><path d="M31 47 L44 42 M69 47 L56 42" ' + st + '/><path d="M40 70 Q50 61 60 70" fill="none" stroke="#7a3b3b" stroke-width="3" stroke-linecap="round"/><ellipse class="tear" cx="33" cy="62" rx="3" ry="4.5" fill="#6EC6FF"/></g>' +
+    '<g class="m m-chat"><path d="M31 43 H44 M56 43 H69" ' + st + '/><ellipse class="mouth" cx="50" cy="68" rx="6" ry="5" fill="#7a2e2e"/></g>' +
+    '<g class="m m-brave"><path d="M31 43 L44 40 M69 43 L56 40" ' + st + '/><path d="M41 66 Q50 74 59 66" fill="none" stroke="#7a3b3b" stroke-width="3" stroke-linecap="round"/></g>' +
+    '<g class="m m-sorry"><path d="M31 47 L44 42 M69 47 L56 42" ' + st + '/><path d="M42 69 Q46 65 50 69 Q54 73 58 69" fill="none" stroke="#7a3b3b" stroke-width="3" stroke-linecap="round"/><path d="M76 36 Q81 45 76 50 Q71 45 76 36 Z" fill="#6EC6FF"/></g>' +
+    '<g class="m m-happy"><path d="M32 54 Q38 46 44 54 M56 54 Q62 46 68 54" fill="none" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/><path d="M38 63 Q50 78 62 63 Z" fill="#7a2e2e"/><circle cx="29" cy="62" r="5" fill="#FF8FA3" opacity=".55"/><circle cx="71" cy="62" r="5" fill="#FF8FA3" opacity=".55"/></g>' +
+    '</svg>';
+}
+
+/* ====== 말풍선 (가시 → 둥글게) ====== */
+var N = 72, CX = 50, CY = 33, RX = 46.5, RY = 29.5;
+var SPIKE = [1, 0.88, 0.74, 0.88], SMOOTH = 0.9;
+function bubblePoints(t){
+  var pts = [];
+  for (var i = 0; i < N; i++){
+    var a = (i / N) * Math.PI * 2 - Math.PI / 2;
+    var f = SPIKE[i % 4] * (1 - t) + SMOOTH * t;
+    pts.push((CX + Math.cos(a) * RX * f).toFixed(2) + "," + (CY + Math.sin(a) * RY * f).toFixed(2));
+  }
+  return pts.join(" ");
+}
+function Bubble(el){
+  this.el = el;
+  this.poly = $(".shape", el);
+  this.textEl = $(".bubble-text", el);
+  this.t = 0; this.anim = 0; this.typer = 0;
+  this.draw();
+}
+Bubble.prototype.draw = function(){ this.poly.setAttribute("points", bubblePoints(this.t)); };
+Bubble.prototype.setState = function(calm){
+  this.el.classList.toggle("is-calm", calm);
+  this.el.classList.toggle("is-thorn", !calm);
+};
+Bubble.prototype.set = function(t){
+  cancelAnimationFrame(this.anim);
+  this.t = t; this.draw(); this.setState(t >= 1);
+};
+Bubble.prototype.hide = function(){ clearInterval(this.typer); this.textEl.textContent = ""; this.el.classList.add("hidden"); this.el.classList.remove("pop"); };
+Bubble.prototype.popIn = function(){ this.el.classList.remove("hidden"); restart(this.el, "pop", 700); };
+Bubble.prototype.type = function(text){
+  var self = this;
+  clearInterval(this.typer);
+  var n = text.length;
+  this.el.style.setProperty("--k", n <= 24 ? 1 : n <= 34 ? 0.88 : n <= 44 ? 0.78 : 0.7);
+  if (reduceMotion()){ this.textEl.textContent = text; return; }
+  var i = 0;
+  this.textEl.textContent = "";
+  this.typer = setInterval(function(){
+    i++;
+    self.textEl.textContent = text.slice(0, i);
+    if (i >= text.length) clearInterval(self.typer);
+  }, 32);
+};
+/* 용기 있는 친구의 말풍선: ‘그러면 안 돼.’ + 학생이 쓴 말 */
+Bubble.prototype.voice = function(text, hon){
+  var el = this.textEl;
+  el.textContent = "";
+  var wrap = document.createElement("span");
+  var b = document.createElement("b"); b.textContent = hon ? "그러면 안 돼요." : "그러면 안 돼.";
+  wrap.appendChild(b);
+  wrap.appendChild(document.createTextNode(" " + (text || "…")));
+  el.appendChild(wrap);
+  var n = (text || "").length + 8;
+  this.el.style.setProperty("--k", n <= 26 ? 1 : n <= 40 ? 0.86 : n <= 55 ? 0.76 : 0.68);
+};
+Bubble.prototype.calm = function(){ this.el.classList.remove("is-voice"); this.el.classList.add("is-calm"); };
+Bubble.prototype.mini = function(){ clearInterval(this.typer); this.el.classList.add("mini"); this.textEl.textContent = "💢"; };
+Bubble.prototype.morph = function(to){
+  var self = this;
+  cancelAnimationFrame(this.anim);
+  this.setState(to >= 1);
+  if (reduceMotion()){ this.t = to; this.draw(); return; }
+  var from = this.t, start = performance.now(), dur = 800;
+  function ease(p){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); }
+  function step(now){
+    var p = Math.min(1, (now - start) / dur);
+    self.t = from + (to - from) * ease(p);
+    self.draw();
+    if (p < 1) self.anim = requestAnimationFrame(step);
+    else { self.t = to; self.draw(); }
+  }
+  this.anim = requestAnimationFrame(step);
+};
+
+/* ====== 무대 ====== */
+function Stage(root){
+  root.classList.add("stage");
+  root.innerHTML =
+    '<div class="cloud c1"></div><div class="cloud c2"></div><div class="ground"></div>' +
+    '<div class="prop" aria-hidden="true"></div>' +
+    '<div class="actor left"><div class="mover"></div></div>' +
+    '<div class="actor right"><div class="mover"></div></div>' +
+    '<div class="actor mid"><div class="mover"></div></div>' +
+    '<div class="bubble a is-thorn hidden"><svg viewBox="0 0 100 66" aria-hidden="true">' +
+    '<polygon class="tail" points="24,50 13,68 40,56"/><polygon class="shape" points=""/></svg>' +
+    '<p class="bubble-text"></p></div>' +
+    '<div class="bubble b is-voice hidden"><svg viewBox="0 0 100 66" aria-hidden="true">' +
+    '<polygon class="tail" points="42,55 58,55 50,70"/><polygon class="shape" points=""/></svg>' +
+    '<p class="bubble-text"></p></div>' +
+    '<div class="fx" aria-hidden="true"></div>';
+  this.root = root;
+  this.left = $(".actor.left", root);
+  this.right = $(".actor.right", root);
+  this.mid = $(".actor.mid", root);
+  this.prop = $(".prop", root);
+  this.fx = $(".fx", root);
+  this.bubble = new Bubble($(".bubble.a", root));
+  this.bubbleB = new Bubble($(".bubble.b", root));
+  this.bubbleB.t = 1; this.bubbleB.draw();
+}
+Stage.prototype.who = function(w){ return w === "L" ? this.left : (w === "R" ? this.right : this.mid); };
+Stage.prototype.cast = function(looks, prop){
+  $(".mover", this.left).innerHTML = actorSVG(looks[0]);
+  $(".mover", this.right).innerHTML = actorSVG(looks[1]);
+  $(".mover", this.mid).innerHTML = looks[2] ? actorSVG(looks[2]) : "";
+  this.prop.textContent = prop || "";
+};
+Stage.prototype.mood = function(who, m){
+  var svg = $("svg", this.who(who));
+  if (svg) svg.setAttribute("data-mood", m);
+};
+Stage.prototype.enter = function(){
+  restart(this.left, "in"); restart(this.right, "in");
+};
+Stage.prototype.react = function(who, cls, ms){
+  restart($(".mover", this.who(who)), cls, ms);
+};
+Stage.prototype.burst = function(list, n){
+  if (reduceMotion()) return;
+  var fx = this.fx;
+  for (var i = 0; i < n; i++){
+    (function(i){
+      var s = document.createElement("span");
+      s.textContent = pick(list);
+      s.style.left = (8 + Math.random() * 84) + "%";
+      s.style.animationDelay = (Math.random() * 0.5) + "s";
+      fx.appendChild(s);
+      setTimeout(function(){ if (s.parentNode) s.parentNode.removeChild(s); }, 2200);
+    })(i);
+  }
+};
+
+/* ====== 화면 ====== */
+var screens = { start: $("#start"), play: $("#play"), end: $("#end") };
+function show(name){
+  for (var k in screens) screens[k].hidden = (k !== name);
+}
+
+var heroStage = new Stage($("#heroStage"));
+var stage = new Stage($("#stage"));
+$("#stage").classList.add("tri");
+var endStage = new Stage($("#endStage"));
+
+/* 시작 화면: 활동의 핵심 장면을 한 번 보여 줌 (가시 말 → 나서는 말 → 미안해!) */
+(function intro(){
+  heroStage.root.classList.add("tri");
+  heroStage.cast([mk("kid", SKINS[1], SHIRTS[1]), mk("kid", SKINS[3], SHIRTS[4]), mk("kid", SKINS[0], SHIRTS[3])], "🌈");
+  heroStage.mood("L", "neutral"); heroStage.mood("R", "neutral"); heroStage.mood("M", "neutral");
+  heroStage.mid.classList.add("on");
+  heroStage.enter(); restart(heroStage.mid, "in");
+  var live = function(){ return !screens.start.hidden; };
+  setTimeout(function(){ if (!live()) return; heroStage.mood("L", "talk"); heroStage.bubble.popIn(); heroStage.bubble.type("이것도 못 하니? 너 바보냐?"); }, 500);
+  setTimeout(function(){ if (!live()) return; heroStage.mood("R", "sad"); }, 1700);
+  setTimeout(function(){
+    if (!live()) return;
+    heroStage.bubble.mini();
+    heroStage.mood("M", "brave");
+    heroStage.bubbleB.popIn();
+    heroStage.bubbleB.voice("친구 마음이 아프니까 도와줘야 돼.");
+  }, 3400);
+  setTimeout(function(){
+    if (!live()) return;
+    heroStage.bubble.textEl.textContent = "미안해!";
+    heroStage.bubble.morph(1);
+    heroStage.bubbleB.calm();
+    heroStage.mood("L", "sorry"); heroStage.mood("R", "happy"); heroStage.mood("M", "happy");
+    heroStage.react("R", "jump", 900); heroStage.react("M", "jump", 900);
+    heroStage.burst(["✨", "💚", "🌟"], 10);
+  }, 5600);
+})();
+
+/* ====== 게임 상태 ====== */
+var order = [], idx = 0, step = 1, wrong = 0, score = 0, roundPts = 0, locked = false, log = [], token = 0;
+var mode = "write", busy = false, forceCards = false;
+
+function buildSegs(){
+  var box = $("#segs");
+  box.innerHTML = "";
+  for (var i = 0; i < rounds; i++){
+    var s = document.createElement("span");
+    s.className = "seg";
+    box.appendChild(s);
+  }
+}
+function updateHud(){
+  $("#count").textContent = (idx + 1) + " / " + rounds;
+  $("#score").textContent = score + "점";
+  var segs = $("#segs").children;
+  for (var i = 0; i < segs.length; i++){
+    segs[i].className = "seg" + (i < idx ? " done" : (i === idx ? " now" : ""));
+  }
+}
+function clearFb(){ $("#fb").innerHTML = ""; }
+function showFb(kind, title, text, btnLabel, onClick){
+  var box = $("#fb");
+  box.innerHTML = "";
+  var d = document.createElement("div");
+  d.className = "fb " + kind;
+  var s = document.createElement("strong"); s.textContent = title;
+  var p = document.createElement("p"); p.textContent = text;
+  d.appendChild(s); d.appendChild(p);
+  var b = null;
+  if (btnLabel){
+    b = document.createElement("button");
+    b.type = "button"; b.className = "btn"; b.textContent = btnLabel;
+    b.addEventListener("click", onClick);
+    d.appendChild(b);
+  }
+  box.appendChild(d);
+  d.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" });
+  if (b) b.focus({ preventScroll: true });
+}
+function renderOptions(list){
+  var box = $("#options");
+  box.innerHTML = "";
+  shuffle(list).forEach(function(o){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = o.t;
+    b.addEventListener("click", function(){ choose(o, b); });
+    box.appendChild(b);
+  });
+}
+
+function startGame(){
+  order = shuffle(ITEMS).slice(0, rounds);
+  idx = 0; score = 0; log = [];
+  buildSegs();
+  show("play");
+  renderRound();
+}
+
+function dlgLine(cls, who, text){
+  var p = document.createElement("p");
+  p.className = "dl " + cls;
+  var b = document.createElement("b"); b.textContent = who + ": ";
+  p.appendChild(b); p.appendChild(document.createTextNode(text));
+  return p;
+}
+function showDialog(it){
+  var box = $("#quoteBox");
+  box.innerHTML = "";
+  var c = document.createElement("div"); c.className = "ctx"; c.textContent = it.scene;
+  box.appendChild(c);
+  box.appendChild(dlgLine("me", "나", it.pre));
+  box.appendChild(dlgLine("fr", it.ln || "친구", it.q));
+  box.hidden = false;
+}
+
+function renderRound(){
+  var it = order[idx], tk = ++token;
+  step = 1; wrong = 0; locked = false; roundPts = 0; busy = false; forceCards = false;
+  updateHud();
+  stage.cast(makeLooks(it), it.prop);
+  stage.mood("L", "neutral"); stage.mood("R", "neutral"); stage.mood("M", "neutral");
+  stage.enter();
+  stage.root.classList.remove("s2");
+  stage.mid.classList.add("on"); restart(stage.mid, "in");
+  stage.bubble.el.classList.remove("mini");
+  stage.bubble.set(0);
+  stage.bubble.hide();
+  stage.bubbleB.hide();
+  stage.bubbleB.el.classList.remove("is-calm"); stage.bubbleB.el.classList.add("is-voice");
+  showDialog(it);
+  $("#stepLabel").textContent = "1단계 · 이유 찾기";
+  $("#question").textContent = "친구가 한 말은 다른 사람의 인권을 침해하고 있어요. 그 이유는 무엇일까요?";
+  clearFb();
+  renderOptions(it.rs.map(function(t, i){ return { t: t, ok: i === 0 }; }));
+  $(".panel").scrollTop = 0;
+  /* 장면 연출: 먼저 ‘나’가 말을 걸고, 잠시 뒤 친구가 가시 돋친 말로 대답해요 */
+  var t2 = 500 + it.pre.length * 32 + 1500;
+  stage.mood("M", "chat");
+  setTimeout(function(){ if (tk !== token || step !== 1) return; stage.bubbleB.popIn(); stage.bubbleB.type(it.pre); }, 500);
+  setTimeout(function(){
+    if (tk !== token || step !== 1) return;
+    stage.bubbleB.hide(); stage.mood("M", "neutral"); stage.mood("L", "talk");
+    stage.bubble.popIn(); stage.bubble.type(it.q);
+  }, t2);
+  setTimeout(function(){ if (tk !== token || step !== 1) return; stage.mood("R", "sad"); }, t2 + 900);
+}
+
+function toStep2(){
+  step = 2; wrong = 0; locked = false; busy = false;
+  var it = order[idx], tk = token;
+  $("#stepLabel").textContent = "2단계 · 말풍선 채우기";
+  clearFb();
+  stage.root.classList.add("s2");
+  stage.bubbleB.hide();
+  stage.bubble.el.classList.remove("hidden");
+  stage.bubble.mini();
+  stage.mood("L", "talk"); stage.mood("R", "sad"); stage.mood("M", "brave");
+  stage.react("M", "jump", 700);
+  setTimeout(function(){ if (tk !== token) return; stage.bubbleB.popIn(); stage.bubbleB.voice("", it.hon); }, 450);
+  renderWrite(it);
+}
+
+/* ====== 다른 친구가 되어 말풍선 채우기 ====== */
+function renderWrite(it){
+  $("#question").textContent = it.hon
+    ? "어른께 말하는 거예요. ‘그러면 안 돼요.’ 다음 말을 존댓말(~요)로 이어서 써 보세요. 왜 안 되는지, 어떻게 해야 하는지를 말해 주세요."
+    : "‘나’가 되어 ‘그러면 안 돼.’ 다음 말을 이어서 써 보세요. 왜 안 되는지, 어떻게 해야 하는지를 말해 주세요.";
+  var box = $("#options");
+  box.innerHTML = "";
+  var ta = document.createElement("textarea");
+  ta.className = "write"; ta.maxLength = 60; ta.rows = 2;
+  ta.placeholder = it.hon ? "여기에 존댓말로 이어서 써 보세요." : "여기에 이어서 써 보세요.";
+  ta.setAttribute("aria-label", "그러면 안 돼 다음에 이어서 쓰기");
+  ta.addEventListener("input", function(){ if (!locked) stage.bubbleB.voice(ta.value, it.hon); });
+  var row = document.createElement("div");
+  row.className = "row";
+  var send = document.createElement("button");
+  send.type = "button"; send.className = "btn"; send.textContent = "말풍선 보내기";
+  row.appendChild(send);
+  var note = document.createElement("p");
+  note.className = "note";
+  note.textContent = "이 도우미는 글자를 보고 판단하는 연습용이에요. 완벽하지 않을 수 있으니 친구들, 선생님과 함께 이야기해 봐요.";
+  box.appendChild(ta); box.appendChild(row); box.appendChild(note);
+  send.addEventListener("click", function(){ submitWrite(it, ta, send); });
+  ta.addEventListener("keydown", function(e){
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); send.click(); }
+  });
+  if (window.matchMedia && matchMedia("(pointer:fine)").matches) ta.focus({ preventScroll: true });
+}
+
+/* 공통 표현 */
+var HARD = ["시발","씨발","시바","씨바","시팔","씨팔","시벌","씹새","좆","좇같","존나","지랄","새끼","개새","개같","개소리","느금","니미","엿먹","썅","염병","병신","븅신","또라이","미친","꺼져","닥쳐","뒤져","뒈져","죽어","죽을래","ㅅㅂ","ㅂㅅ","ㅈㄹ","ㅁㅊ","ㅈㄴ","ㄲㅈ","ㄷㅊ","ㅆㅂ","fuck","shit","bitch"];
+var DIRECTED = /(바보|멍청|찐따|돼지|뚱뚱|못생|한심)(야|아|이야|냐|같|새끼|이네|인가)/;
+var THREAT = /너때문|네탓|안하면|안그러면|쫓아|혼날|이를거|일러줄|네가잘못|니가잘못|네잘못|너잘못/;
+var REASON_RE = /상처|기분(이|을|도)?(나쁘|나빠|상하|상해|안좋|생각|헤아|살피)|속상|아프|아파|슬프|슬퍼|힘들|마음(이|을|에|도)?(아프|아파|상처|다치|불편|생각|헤아|살피)|(친구|상대|남|걔)(의)?마음|아픈|아픔|슬픈|슬픔|힘든|인권|존중|차별|편견|권리|불편|불공평|싫어하|싫어할|싫어해|소중|무서|외로|창피|자존심|괴로|눈물|나쁜|나쁘|잘못|옳지|못된|예의|억지|강요|부당|무시하는|무시하면|무시당|무시받|놀리|괴롭|따돌|폭력|비난|모욕|소외|외톨|배제|느끼|느껔|느낄|서운|섭섭|억울|위축|주눅|무안|불쾌|외면|왕따|존엄|평등|공평|동등|자신감|불안|위험|안전|피해|해로|다칠|다쳐|두렵|감정|싫다고|사람마다/;
+var ALT_RE = /해야|하자|하지말|말자|말고|해줘|해주자|합시다|사과|도와|같이|함께|물어|허락|동의|이해|배려|그만|고치|알려|야돼|야해|스스로|직접|조심|지키|바꾸|바꿔|양보|부탁|노력|포함|초대|끼워|넣어|넣자|함께해|같이해|지켜|만들자|참여|어울|야지|줘야|드려야|지워|삭제|취소|주세요|주셔야|하셔야|해요|드릴게요/;
+function norm(s){ return String(s).toLowerCase().replace(/[\s.,!?~…·"'“”‘’()\[\]\-]/g, ""); }
+function hasAny(t, list){ for (var i = 0; i < list.length; i++){ if (t.indexOf(list[i]) >= 0) return true; } return false; }
+function bigrams(t){ var m = {}; for (var i = 0; i < t.length - 1; i++) m[t.substr(i, 2)] = 1; return m; }
+function similar(a, b){
+  var A = bigrams(a), B = bigrams(b), inter = 0, uni = 0, k;
+  for (k in A){ uni++; if (B[k]) inter++; }
+  for (k in B){ if (!A[k]) uni++; }
+  return uni ? inter / uni : 0;
+}
+/* 글자를 보고 판단하는 간이 판정: { level: great | almost | retry, praise, tip }
+   학생이 쓴 말 = ‘그러면 안 돼.’ 다음에 이어 쓴 말.  좋은 말 = 이유(마음·권리) + 해야 할 행동 */
+/* 문장이 모두 존댓말(~요, ~니다 …)로 끝나는지 */
+function isInformal(raw){
+  var sents = String(raw).split(/[.!?~…]+/);
+  for (var i = 0; i < sents.length; i++){
+    var x = sents[i].replace(/[\s"'“”‘’)]+$/g, "").replace(/^[\s"'“”‘’(]+/, "");
+    if (x.length < 3) continue;
+    if (!/(요|니다|니까|죠|시다|시오)$/.test(x)) return true;
+  }
+  return false;
+}
+function judgeText(it, raw){
+  var j = it.j;
+  /* 욕설은 길이와 상관없이 가장 먼저 확인 (띄어쓰기·숫자·기호로 숨겨도 찾음) */
+  var strict = String(raw).toLowerCase().replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-z]/g, "");
+  if (hasAny(strict, HARD)){
+    return { level:"retry", praise:"", tip:"이 말에는 친구에게 상처가 될 수 있는 표현이 들어 있어요. 친구가 들어도 기분 좋은 말로 써 볼까요?" };
+  }
+  var t = norm(raw).replace(/^그러면안돼/, "");
+  var syl = (t.match(/[가-힣]/g) || []);
+  var uniq = {}; syl.forEach(function(c){ uniq[c] = 1; });
+  if (syl.length < 4 || Object.keys(uniq).length < 3){
+    return { level:"retry", praise:"", tip:"조금 더 자세히 써 볼까요? 왜 안 되는지, 어떻게 해야 하는지를 한 문장으로 써 주세요." };
+  }
+  if (DIRECTED.test(t)){
+    return { level:"retry", praise:"", tip:"친구를 놀리거나 깎아내리는 말이 들어 있어요. 차분하게 이유를 설명해 볼까요?" };
+  }
+  if (similar(t, norm(it.q)) >= 0.7){
+    return { level:"retry", praise:"", tip:"친구가 한 말을 그대로 썼어요. 그 말에 맞서는 나만의 말을 써 볼까요?" };
+  }
+  if (THREAT.test(t)){
+    return { level:"almost", praise:"", tip:"친구를 탓하거나 겁주기보다, 왜 안 되는지 차분히 설명해 볼까요?" };
+  }
+  var tr = t.replace(/마음대로/g, "");
+  var reason = REASON_RE.test(tr), alt = ALT_RE.test(tr) || /[가-힣]자(?=[\s.,!?~]|$)/.test(String(raw)), key = hasAny(tr, j.ok);
+  /* 이유만 써도 ‘잘했어요’. 이유 + 해야 할 행동이면 더 좋은 말 */
+  if (it.hon && (reason || (alt && key)) && isInformal(raw)){
+    return { level:"almost", praise:"왜 안 되는지, 어떻게 해야 하는지 잘 생각했어요.", tip:"어른께 말하는 거니까 존댓말로 써 볼까요? 문장 끝을 ‘~요’로 바꿔 보세요." };
+  }
+  if (reason || (alt && key)){
+    var praise = reason ? "왜 안 되는지 상대의 마음이나 권리로 설명했어요." : "어떻게 해야 하는지 알려 줬어요.";
+    if (reason && (alt || key)) praise += " 어떻게 해야 하는지도 알려 줬어요.";
+    else if (reason) praise += " 어떻게 해야 하는지도 덧붙이면 더 좋아요.";
+    return { level:"great", praise:praise, tip:"" };
+  }
+  if (alt || key){
+    return { level:"almost", praise:"어떻게 하면 좋은지 알려 줬어요.", tip:"왜 그러면 안 되는지, 상대의 마음이나 권리도 넣어 볼까요?" };
+  }
+  return { level:"retry", praise:"", title:"조금만 더 써 볼까요?", tip:"도우미가 잘 이해하지 못했을 수 있어요. ‘마음’, ‘상처’, ‘차별’처럼 이유가 분명히 드러나는 말을 넣어 볼까요? " + j.hint };
+}
+
+function submitWrite(it, ta, send){
+  if (locked || busy) return;
+  var text = ta.value.replace(/\s+/g, " ").trim();
+  if (!text){ showFb("bad", "먼저 써 보세요", "‘" + (it.hon ? "그러면 안 돼요." : "그러면 안 돼.") + "’ 다음에 이어질 말을 한 줄 써 주세요."); return; }
+  busy = true;
+  var tk = token;
+  send.disabled = true; ta.readOnly = true;
+  send.textContent = "도우미가 읽는 중…";
+  showFb("wait", "도우미가 살펴보고 있어요", "잠깐만 기다려 주세요.");
+  function reopen(){
+    busy = false; send.disabled = false; ta.readOnly = false; send.textContent = "다시 보내기";
+  }
+  setTimeout(function(){
+    if (tk !== token) return;
+    judged(it, text, judgeText(it, text), ta, send, reopen);
+  }, reduceMotion() ? 0 : 600);
+}
+
+/* 성공(또는 도움) 연출: 용기 있는 말에 친구가 미안해하고, 모두가 웃어요 */
+function celebrate(sentence, hon){
+  stage.bubbleB.voice(sentence, hon);
+  stage.bubbleB.calm();
+  stage.bubble.textEl.textContent = "미안해!";
+  stage.bubble.morph(1);
+  stage.mood("L", "sorry"); stage.mood("R", "happy"); stage.mood("M", "happy");
+  stage.react("R", "jump", 900); stage.react("M", "jump", 900);
+}
+
+function judged(it, text, r, ta, send, reopen){
+  var level = String(r.level || "retry");
+  var praise = String(r.praise || "").slice(0, 200);
+  var tip = String(r.tip || "").slice(0, 200);
+  if (level === "great"){
+    locked = true; busy = false;
+    var p = [10, 5, 0][Math.min(wrong, 2)];
+    roundPts += p; score += p;
+    $("#score").textContent = score + "점";
+    ta.readOnly = true; send.disabled = true; send.textContent = "완료";
+    tone([660, 880]);
+    celebrate(text, it.hon);
+    stage.burst(["✨", "💚", "🌟", "🌈"], 12);
+    log.push({ it: it, pts: roundPts, mine: (it.hon ? "그러면 안 돼요. " : "그러면 안 돼. ") + text });
+    var lastG = idx === rounds - 1;
+    showFb("good", "용기 있게 말했어요! +" + p + "점",
+      praise || "상대의 마음과 권리를 지키는 말이에요.",
+      lastG ? "결과 보기" : "다음 문제", nextRound);
+    return;
+  }
+  wrong++;
+  if (wrong >= 3){
+    locked = true; busy = false;
+    ta.readOnly = true; send.disabled = true; send.textContent = "완료";
+    tone([440, 523]);
+    celebrate(it.ex, it.hon);
+    log.push({ it: it, pts: roundPts });
+    var last3 = idx === rounds - 1;
+    showFb("good", "도우미가 도와줄게요",
+      "이렇게 말해 볼 수 있어요: “" + (it.hon ? "그러면 안 돼요. " : "그러면 안 돼. ") + it.ex + "” 다음 문제에서 또 도전해 봐요.",
+      last3 ? "결과 보기" : "다음 문제", nextRound);
+    return;
+  }
+  reopen();
+  restart(stage.bubbleB.el, "shake", 500);
+  stage.react("R", "cry", 700);
+  tone([220]);
+  var title = r.title || (level === "almost" ? "거의 다 왔어요!" : "다시 생각해 봐요");
+  var msg = (praise + " " + tip).trim();
+  showFb("bad", title, msg || "상대의 마음과 권리를 떠올리며 다시 써 볼까요?");
+}
+
+function choose(o, btn){
+  if (locked) return;
+  var it = order[idx];
+  if (o.ok){
+    locked = true;
+    var p = [10, 5, 0][Math.min(wrong, 2)];
+    roundPts += p; score += p;
+    $("#score").textContent = score + "점";
+    btn.classList.add("right");
+    var all = $("#options").children;
+    for (var i = 0; i < all.length; i++){
+      all[i].disabled = true;
+      if (all[i] !== btn && !all[i].classList.contains("wrong")) all[i].classList.add("dim");
+    }
+    tone([660, 880]);
+    if (step === 1){
+      restart(stage.bubble.el, "pulse", 600);
+      stage.react("R", "cry", 700);
+      showFb("good", "맞아요! +" + p + "점",
+        "이 말은 상대의 마음과 권리를 해치는 ‘가시 돋친 말’이에요. 이제 ‘나’가 되어 용기 있게 말해 볼까요?",
+        "나서 보기", toStep2);
+    } else {
+      stage.bubble.type(it.fix);
+      stage.bubble.morph(1);
+      stage.mood("L", "happy"); stage.mood("R", "happy");
+      stage.react("L", "jump", 900); stage.react("R", "jump", 900);
+      stage.burst(["✨", "💚", "🌟", "🌈"], 12);
+      log.push({ it: it, pts: roundPts });
+      var last = idx === rounds - 1;
+      showFb("good", "말이 둥글어졌어요! +" + p + "점",
+        "이렇게 말하면 상대의 마음과 권리를 지킬 수 있어요.",
+        last ? "결과 보기" : "다음 문제", nextRound);
+    }
+  } else {
+    wrong++;
+    btn.disabled = true;
+    btn.classList.add("wrong");
+    restart(stage.bubble.el, "shake", 500);
+    stage.react("R", "cry", 700);
+    tone([220]);
+    showFb("bad", "다시 생각해 봐요",
+      o.why || "이 이유는 아니에요. 말을 들은 친구의 마음과 권리를 떠올려 보세요.");
+  }
+}
+
+function nextRound(){
+  idx++;
+  if (idx >= rounds) endGame(); else renderRound();
+}
+
+function endGame(){
+  token++;
+  show("end");
+  var max = rounds * 20, best = 0;
+  try{ best = parseInt(localStorage.getItem(BEST_KEY + "-" + rounds), 10) || 0; }catch(e){}
+  var isNew = score > best;
+  if (isNew){ best = score; try{ localStorage.setItem(BEST_KEY + "-" + rounds, String(score)); }catch(e){} }
+
+  var r = score / max, title, msg;
+  if (r >= 0.9){ title = "인권 지킴이 대장!"; msg = "거의 모든 장면에서 용기 있게 나섰어요. 친구들에게도 알려 주세요!"; }
+  else if (r >= 0.7){ title = "인권 지킴이!"; msg = "말이 가진 힘을 잘 알고 있어요. 조금만 더 하면 대장이 될 수 있어요."; }
+  else if (r >= 0.45){ title = "인권 지킴이 견습생"; msg = "아래 ‘오늘의 인권 지킴이 말’을 읽고 다시 도전해 봐요."; }
+  else { title = "다시 도전해 봐요"; msg = "괜찮아요. 아래 ‘오늘의 인권 지킴이 말’을 읽고 다시 해 보면 훨씬 쉬워져요."; }
+
+  endStage.cast([mk("kid", pick(SKINS), SHIRTS[1]), mk("kid", pick(SKINS), SHIRTS[3])], "🏆");
+  endStage.mood("L", "happy"); endStage.mood("R", "happy");
+  endStage.enter();
+  endStage.bubble.set(1);
+  endStage.bubble.hide();
+  setTimeout(function(){ endStage.bubble.popIn(); endStage.bubble.type(title); }, 450);
+  setTimeout(function(){
+    endStage.react("L", "jump", 900); endStage.react("R", "jump", 900);
+    endStage.burst(["🎉", "✨", "💚", "🌟"], 18);
+  }, 700);
+
+  $("#endScore").textContent = score;
+  $("#endMax").textContent = max;
+  $("#best").textContent = isNew ? "새 최고 점수예요!" : "내 최고 점수 " + best + "점";
+  $("#endMsg").textContent = msg;
+  $("#end").scrollTop = 0;
+
+  var ul = $("#recap");
+  ul.innerHTML = "";
+  log.forEach(function(r){
+    var li = document.createElement("li");
+    li.appendChild(line("no", "이렇게 하지 말아요.", "“" + r.it.q + "”"));
+    li.appendChild(line("yes", r.mine ? "내가 한 말" : "이렇게 해 주세요.", "“" + (r.mine || r.it.fix) + "”"));
+    ul.appendChild(li);
+  });
+  tone([523, 659, 784, 1047]);
+}
+function line(cls, label, text){
+  var p = document.createElement("p");
+  p.className = cls;
+  var l = document.createElement("span"); l.className = "lbl"; l.textContent = label;
+  p.appendChild(l);
+  p.appendChild(document.createTextNode(text));
+  return p;
+}
+
+/* ====== 이벤트 ====== */
+$("#startBtn").addEventListener("click", startGame);
+$("#againBtn").addEventListener("click", startGame);
+Array.prototype.forEach.call(document.querySelectorAll(".chip[data-mode]"), function(c){
+  c.addEventListener("click", function(){
+    mode = c.getAttribute("data-mode");
+    Array.prototype.forEach.call(document.querySelectorAll(".chip[data-mode]"), function(x){
+      x.setAttribute("aria-pressed", x === c ? "true" : "false");
+    });
+  });
+});
+$("#soundBtn").addEventListener("click", function(){
+  soundOn = !soundOn;
+  this.textContent = soundOn ? "🔊" : "🔇";
+  this.setAttribute("aria-label", soundOn ? "소리 끄기" : "소리 켜기");
+});
+var fsBtn = $("#fsBtn");
+if (!document.fullscreenEnabled) fsBtn.hidden = true;
+fsBtn.addEventListener("click", function(){
+  try{
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  }catch(e){}
+});
+})();
+</script>
+</body>
+</html>
